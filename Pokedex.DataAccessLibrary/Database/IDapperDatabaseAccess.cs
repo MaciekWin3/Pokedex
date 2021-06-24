@@ -11,6 +11,9 @@ namespace Pokedex.DataAccessLibrary.Database
         bool DoesPokemonNameExists(string name);
         List<Pokemon> GetAllPokemons();
         Pokemon GetPokemonById(int id);
+        Pokemon GetPokemonByName(string name);
+        List<Pokemon> GetPokemonsByType(string type);
+        PokemonCounter PokemonCounter();
         Pokemon UpdatePokemon(Pokemon pokemon);
     }
 }

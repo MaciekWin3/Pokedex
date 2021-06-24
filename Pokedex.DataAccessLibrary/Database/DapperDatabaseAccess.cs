@@ -81,14 +81,38 @@ namespace Pokedex.DataAccessLibrary.Database
 
         public bool DoesPokemonIdExists(int id)
         {
-            var sql = "Select count(1) from Pokemons where id = @id";
+            var sql = "Select top 1 * from Pokemons where id = @id";
             return db.ExecuteScalar<bool>(sql, new { id });
         }
 
         public bool DoesPokemonNameExists(string name)
         {
-            var sql = "Select count(1) from Pokemons where name = @name";
+            var sql = "Select top 1 * from Pokemons where name = @name";
             return db.ExecuteScalar<bool>(sql, new { name });
+        }
+
+        public PokemonCounter PokemonCounter()
+        {
+            var sql = "Select count(*) from Pokemons";
+            int counter = db.QueryFirst<int>(sql);
+            PokemonCounter pokemonCounter = new PokemonCounter
+            {
+                Count = counter
+            };
+
+            return pokemonCounter;
+        }
+
+        public Pokemon GetPokemonByName(string name)
+        {
+            var sql = "Select * from Pokemons where name = @name";
+            return db.Query<Pokemon>(sql, new { @name = name }).Single();
+        }
+
+        public List<Pokemon> GetPokemonsByType(string type)
+        {
+            var sql = "Select * from Pokemons where type like @type";
+            return db.Query<Pokemon>(sql, new { type = "%" + type + "%" }).ToList();
         }
 
     }

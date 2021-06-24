@@ -86,11 +86,12 @@ namespace Pokedex.Api.Controllers
                 bool exists = _db.DoesPokemonNameExists(pokemon.Name);
                 if (!exists)
                 {
-                    return _db.AddPokemon(pokemon);
+                    var createdPokemon = _db.AddPokemon(pokemon);
+                    return CreatedAtAction(nameof(GetPokemonById), new { id = createdPokemon.Id }, createdPokemon);
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status409Conflict, "Pokemon with that name already exists!");
+                    return StatusCode(StatusCodes.Status409Conflict, $"Pokemon with name {pokemon.Name} already exists!");
                 }
             }
             catch (Exception e)
@@ -105,6 +106,103 @@ namespace Pokedex.Api.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public ActionResult<Pokemon> EditPokemon(Pokemon pokemon)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                bool exists = _db.DoesPokemonIdExists(pokemon.Id);
+                if (exists)
+                {
+                    return _db.UpdatePokemon(pokemon);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, $"Pokemon with this id does not exists in your pokedex! Go catch him!");
+                }
+            }
+            catch (Exception e)
+            {
+                //return BadRequest(e.Message);
+                while (e.InnerException != null)
+                {
+                    e = e.InnerException;
+                }
+
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpGet, Route("counter")]
+        public ActionResult<PokemonCounter> PokemonCounter()
+        {
+            try
+            {
+                return _db.PokemonCounter();
+            }
+            catch (Exception e)
+            {
+                while (e.InnerException != null)
+                {
+                    e = e.InnerException;
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpGet, Route("searchbyname/{name}")]
+        public ActionResult<Pokemon> GetPokemonByName(string name)
+        {         
+            try
+            {
+                bool exists = _db.DoesPokemonNameExists(name);
+                if (exists)
+                {
+                    return _db.GetPokemonByName(name);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, $"Pokemon {name} does not exists in your pokedex!");
+                }
+            }
+            catch (Exception e)
+            {
+                while (e.InnerException != null)
+                {
+                    e = e.InnerException;
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
+
+        [HttpGet, Route("searchbytype/{type}")]
+        public ActionResult<List<Pokemon>> GetPokemonByType(string type)
+        {
+            try
+            {
+                var pokemons =  _db.GetPokemonsByType(type);
+
+                if(pokemons.Count == 0)
+                {
+                    return NotFound();
+                }
+
+                return pokemons;
+            }
+            catch (Exception e)
+            {
+                while (e.InnerException != null)
+                {
+                    e = e.InnerException;
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+        }
 
 
 
