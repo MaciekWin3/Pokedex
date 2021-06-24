@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\PokemonPictures\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Pokedex.DataAccessLibrary\Pokedex.DataAccessLibrary.csproj" />
   </ItemGroup>
 

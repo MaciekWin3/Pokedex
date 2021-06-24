@@ -6,14 +6,13 @@ using Pokedex.DataAccessLibrary.Database;
 using Pokedex.DataAccessLibrary.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace Pokedex.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PokemonsController : ControllerBase
     {
         public IDapperDatabaseAccess _db;
@@ -25,6 +24,7 @@ namespace Pokedex.Api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<Pokemon>> GetPokemons()
         {
             try
@@ -42,8 +42,10 @@ namespace Pokedex.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Pokemon> GetPokemonById(int id)
         {
             try
@@ -107,7 +109,10 @@ namespace Pokedex.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Pokemon> EditPokemon(Pokemon pokemon)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<Pokemon> EditPokemon(int id, Pokemon pokemon)
         {
             if (!ModelState.IsValid)
             {
@@ -116,7 +121,7 @@ namespace Pokedex.Api.Controllers
 
             try
             {
-                bool exists = _db.DoesPokemonIdExists(pokemon.Id);
+                bool exists = _db.DoesPokemonIdExists(id);
                 if (exists)
                 {
                     return _db.UpdatePokemon(pokemon);
@@ -139,6 +144,9 @@ namespace Pokedex.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Pokemon> DeletePokemonm(int id)
         {
             bool exists = _db.DoesPokemonIdExists(id);
@@ -163,6 +171,9 @@ namespace Pokedex.Api.Controllers
         }
 
         [HttpGet, Route("counter")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<PokemonCounter> PokemonCounter()
         {
             try
@@ -180,6 +191,10 @@ namespace Pokedex.Api.Controllers
         }
 
         [HttpGet, Route("searchbyname/{name}")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Pokemon> GetPokemonByName(string name)
         {         
             try
@@ -205,6 +220,9 @@ namespace Pokedex.Api.Controllers
         }
 
         [HttpGet, Route("searchbytype/{type}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<List<Pokemon>> GetPokemonByType(string type)
         {
             try
