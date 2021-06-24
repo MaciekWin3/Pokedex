@@ -14,11 +14,11 @@ namespace Pokedex.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class PokemonController : ControllerBase
+    public class PokemonsController : ControllerBase
     {
         public IDapperDatabaseAccess _db;
 
-        public PokemonController(IDapperDatabaseAccess db)
+        public PokemonsController(IDapperDatabaseAccess db)
         {
             _db = db;
         }
@@ -136,6 +136,30 @@ namespace Pokedex.Api.Controllers
 
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<Pokemon> DeletePokemonm(int id)
+        {
+            bool exists = _db.DoesPokemonIdExists(id);
+            if (exists)
+            {
+                try
+                {
+                    _db.DeletePokemonById(id);
+                    return Ok("Pokemon deleted from Pokedex!");
+                }
+                catch(Exception e)
+                {
+                    while (e.InnerException != null)
+                    {
+                        e = e.InnerException;
+                    }
+
+                    return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+                }
+            }
+            return NotFound($"Pokemon with this id does not exists: {id}");
         }
 
         [HttpGet, Route("counter")]

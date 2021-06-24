@@ -38,7 +38,7 @@ namespace Pokedex.DataAccessLibrary.Database
             pokemon.Added = Date;
             pokemon.Modified = Date;
 
-            var sql = "Insert into Pokemons values(@Name, @Type, @Abilities, @Hp, @Attack, @SpecialAttack, @Defense, @SpecialDefense, @Speed, @Height, @Weight, @Description, @PicturePath, @Added, @Modified)";
+            var sql = "Insert into Pokemons values(@Name, @Type, @Abilities, @Hp, @Attack, @SpecialAttack, @Defense, @SpecialDefense, @Speed, @Height, @Weight, @Description, @Added, @Modified)";
 
             var record = db.Query(sql, new
             {
@@ -54,7 +54,6 @@ namespace Pokedex.DataAccessLibrary.Database
                 pokemon.Height,
                 pokemon.Weight,
                 pokemon.Description,
-                pokemon.PicturePath,
                 pokemon.Added,
                 pokemon.Modified
             });
@@ -66,7 +65,7 @@ namespace Pokedex.DataAccessLibrary.Database
         {
             var sql = @"Update Pokemons set Name = @Name, Type = @Type, Abilities = @Abilities, Hp = @Hp, Attack = @Attack, SpecialAttack = @SpecialAttack,
                         Defense = @Defense, SpecialDefense = @SpecialDefense, Speed = @Speed, Height = @Height, Weight = @Weight, Description = @Description,
-                        PicturePath = @PicturePath, Added = @Added, Modified = @Modified where Id = @Id";
+                        Added = @Added, Modified = @Modified where Id = @Id";
 
             db.Execute(sql, pokemon);
             return pokemon;
